@@ -14,16 +14,157 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      aulas: {
+        Row: {
+          created_at: string
+          curso: string
+          data: string
+          horario: string
+          id: string
+          professor: string
+          tema_da_aula: string
+          unidade: string
+          updated_at: string
+          vagas_totais: number
+        }
+        Insert: {
+          created_at?: string
+          curso: string
+          data: string
+          horario: string
+          id?: string
+          professor: string
+          tema_da_aula: string
+          unidade: string
+          updated_at?: string
+          vagas_totais: number
+        }
+        Update: {
+          created_at?: string
+          curso?: string
+          data?: string
+          horario?: string
+          id?: string
+          professor?: string
+          tema_da_aula?: string
+          unidade?: string
+          updated_at?: string
+          vagas_totais?: number
+        }
+        Relationships: []
+      }
+      inscricoes: {
+        Row: {
+          aula_id: string
+          data_hora_inscricao: string
+          email: string
+          id: string
+          nome: string
+          status: string
+        }
+        Insert: {
+          aula_id: string
+          data_hora_inscricao?: string
+          email: string
+          id?: string
+          nome: string
+          status?: string
+        }
+        Update: {
+          aula_id?: string
+          data_hora_inscricao?: string
+          email?: string
+          id?: string
+          nome?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inscricoes_aula_id_fkey"
+            columns: ["aula_id"]
+            isOneToOne: false
+            referencedRelation: "aulas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_listar_aulas: {
+        Args: never
+        Returns: {
+          curso: string
+          data: string
+          horario: string
+          id: string
+          professor: string
+          tema_da_aula: string
+          unidade: string
+          vagas_preenchidas: number
+          vagas_restantes: number
+          vagas_totais: number
+        }[]
+      }
+      confirmar_inscricao: {
+        Args: {
+          p_aula_id: string
+          p_curso: string
+          p_data: string
+          p_email: string
+          p_horario: string
+          p_nome: string
+          p_professor: string
+          p_tema_da_aula: string
+          p_unidade: string
+        }
+        Returns: Json
+      }
+      existe_admin: { Args: never; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      listar_aulas_disponiveis: {
+        Args: never
+        Returns: {
+          curso: string
+          data: string
+          horario: string
+          id: string
+          professor: string
+          tema_da_aula: string
+          unidade: string
+          vagas_restantes: number
+          vagas_totais: number
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +291,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+    },
   },
 } as const
