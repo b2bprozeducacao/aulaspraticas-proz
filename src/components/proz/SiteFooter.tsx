@@ -26,7 +26,7 @@ export function SiteFooter() {
           </span>
         </p>
       </div>
-      <p className="pb-6 text-center text-xs text-subtle">© Proz Educação</p>
+      <p className="pb-6 text-center text-xs text-muted-foreground">© Proz Educação</p>
     </footer>
   );
 }
