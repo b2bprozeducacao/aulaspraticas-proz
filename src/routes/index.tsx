@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { AlertCircle, ArrowLeft, Building2, GraduationCap, Loader2, PartyPopper, RefreshCw } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -469,7 +469,7 @@ function Vazio({ texto }: { texto: string }) {
   );
 }
 
-function Alerta({ children }: { children: React.ReactNode }) {
+function Alerta({ children }: { children: ReactNode }) {
   return (
     <div role="alert" className="mb-4 mt-4 flex items-start gap-3 rounded-2xl border border-highlight bg-card p-4 text-sm text-foreground">
       <AlertCircle className="mt-0.5 size-5 shrink-0 text-cta" aria-hidden />
@@ -478,7 +478,7 @@ function Alerta({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ErroCampo({ id, children }: { id: string; children: React.ReactNode }) {
+function ErroCampo({ id, children }: { id: string; children: ReactNode }) {
   return (
     <p id={id} className="flex items-center gap-1.5 text-sm font-medium text-destructive">
       <AlertCircle className="size-4" aria-hidden /> {children}
