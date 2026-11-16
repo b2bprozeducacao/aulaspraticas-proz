@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { diaDaSemana, formatarData, formatarHorario } from "@/lib/datas";
 import { ULTIMAS_VAGAS, type AulaDisponivel, type ResumoAula } from "./tipos";
 
-export function StepHeading({ eyebrow, title, hint }: { eyebrow: string; title: string; hint?: string }) {
+export function StepHeading({ eyebrow, title, hint }: { eyebrow: string; title: string; hint?: string | undefined }) {
   return (
     <div className="mb-6">
       <p className="eyebrow">{eyebrow}</p>
@@ -21,9 +21,9 @@ export function OptionButton({
   icon,
 }: {
   label: string;
-  detail?: string;
+  detail?: string | undefined;
   onClick: () => void;
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 }) {
   return (
     <button
@@ -57,6 +57,10 @@ export function VagasBadge({ restantes }: { restantes: number }) {
   return null;
 }
 
+function capitalizar(t: string) {
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
 function textoVagas(n: number) {
   if (n <= 0) return "Sem vagas";
   return n === 1 ? "1 vaga restante" : `${n} vagas restantes`;
@@ -84,7 +88,9 @@ export function AulaCard({ aula, onSelect }: { aula: AulaDisponivel; onSelect: (
       <ul className="grid gap-1.5 text-sm text-muted-foreground">
         <li className="flex items-center gap-2">
           <CalendarDays className="size-4 text-brand-vibrant" aria-hidden />
-          <span className="capitalize">{diaDaSemana(aula.data)}</span>, {formatarData(aula.data)}
+          <span>
+            {capitalizar(diaDaSemana(aula.data))}, {formatarData(aula.data)}
+          </span>
         </li>
         <li className="flex items-center gap-2">
           <Clock className="size-4 text-brand-vibrant" aria-hidden />

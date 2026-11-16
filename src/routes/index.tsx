@@ -63,11 +63,11 @@ function Inscricao() {
   const [aula, setAula] = useState<AulaDisponivel | null>(null);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [errosForm, setErrosForm] = useState<{ nome?: string; email?: string }>({});
+  const [errosForm, setErrosForm] = useState<{ nome?: string | undefined; email?: string | undefined }>({});
   const [aceite, setAceite] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
-  const [erroConfirmacao, setErroConfirmacao] = useState<{ mensagem: string; aulaExistente?: ResumoAula } | null>(null);
+  const [erroConfirmacao, setErroConfirmacao] = useState<{ mensagem: string; aulaExistente?: ResumoAula | undefined } | null>(null);
   const [confirmada, setConfirmada] = useState<{ aula: ResumoAula; nome: string; email: string } | null>(null);
 
   const cursos = useMemo(() => contar(aulas ?? [], (a) => a.curso), [aulas]);

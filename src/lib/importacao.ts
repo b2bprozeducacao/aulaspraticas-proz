@@ -61,11 +61,11 @@ export function validarLinhas(linhas: Record<string, unknown>[]): ResultadoImpor
     for (const c of ["curso", "unidade", "tema_da_aula", "professor"] as const) {
       if (!l[c]) erros.push(`"${c}" vazio`);
     }
-    const data = parseDataBR(l.data ?? "");
-    if (!data) erros.push(`data inválida ("${l.data ?? ""}") — use DD/MM/AAAA`);
-    const horario = parseHorario(l.horario ?? "");
-    if (!horario) erros.push(`horário inválido ("${l.horario ?? ""}") — use HH:MM`);
-    const vagasTxt = l.vagas_totais ?? "";
+    const data = parseDataBR(l['data'] ?? "");
+    if (!data) erros.push(`data inválida ("${l['data'] ?? ""}") — use DD/MM/AAAA`);
+    const horario = parseHorario(l['horario'] ?? "");
+    if (!horario) erros.push(`horário inválido ("${l['horario'] ?? ""}") — use HH:MM`);
+    const vagasTxt = l['vagas_totais'] ?? "";
     const vagas = /^\d+$/.test(vagasTxt) ? Number(vagasTxt) : NaN;
     if (!Number.isInteger(vagas) || vagas < 0) erros.push(`vagas não numéricas ("${vagasTxt}")`);
 
@@ -74,12 +74,12 @@ export function validarLinhas(linhas: Record<string, unknown>[]): ResultadoImpor
       return;
     }
     const aula: AulaImportada = {
-      curso: l.curso,
-      unidade: l.unidade,
-      tema_da_aula: l.tema_da_aula,
+      curso: l['curso'] ?? "",
+      unidade: l['unidade'] ?? "",
+      tema_da_aula: l['tema_da_aula'] ?? "",
       data: data!,
       horario: horario!,
-      professor: l.professor,
+      professor: l['professor'] ?? "",
       vagas_totais: vagas,
     };
     const chave = [aula.curso, aula.unidade, aula.tema_da_aula, aula.data, aula.horario, aula.professor].join("|");

@@ -29,7 +29,9 @@ async function lerArquivo(file: File): Promise<Record<string, unknown>[]> {
     return r.data;
   }
   const wb = XLSX.read(buf, { type: "array" });
-  const ws = wb.Sheets[wb.SheetNames[0]];
+  const primeira = wb.SheetNames[0];
+  const ws = primeira ? wb.Sheets[primeira] : undefined;
+  if (!ws) return [];
   const linhas = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { raw: true, defval: "" });
   // Datas e horários do Excel chegam como números seriais: converter para DD/MM/AAAA e HH:MM.
   return linhas.map((l) => {
