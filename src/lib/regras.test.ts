@@ -3,6 +3,7 @@ import { emailValido, nomeCompletoValido, normalizarEmail } from "./validacao";
 import { gerarCsv } from "./csv-export";
 import { validarLinhas } from "./importacao";
 import { parseDataBR } from "./datas";
+import { mensagemErroAuth } from "./erros-auth";
 
 describe("regras do aluno", () => {
   it("salva o e-mail em minúsculas e sem espaços", () => {
@@ -50,5 +51,20 @@ describe("importação de aulas", () => {
     expect(r.validas).toHaveLength(1);
     expect(r.validas[0]).toMatchObject({ data: "2026-12-01", horario: "10:00", vagas_totais: 8 });
     expect(r.invalidas.map((l) => l.linha)).toEqual([3, 4]);
+  });
+});
+
+describe("mensagens de erro do acesso admin", () => {
+  it("avisa senha fraca", () => {
+    expect(mensagemErroAuth({ code: "weak_password", message: "Password should be at least 8 characters" })).toMatch(/^Senha fraca/);
+  });
+  it("avisa e-mail já cadastrado", () => {
+    expect(mensagemErroAuth({ code: "user_already_exists", message: "User already registered" })).toMatch(/já está cadastrado/);
+  });
+  it("avisa e-mail com formato inválido", () => {
+    expect(mensagemErroAuth({ code: "validation_failed", message: "Unable to validate email address: invalid format" })).toMatch(/^E-mail inválido/);
+  });
+  it("avisa cadastro desativado", () => {
+    expect(mensagemErroAuth({ code: "signup_disabled", message: "Signups not allowed for this instance" })).toMatch(/desativado/);
   });
 });
