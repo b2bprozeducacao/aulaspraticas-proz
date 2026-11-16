@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/proz/Logo";
+import { emailValido, normalizarEmail } from "@/lib/validacao";
+import { mensagemErroAuth, type ErroAuth } from "@/lib/erros-auth";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -46,35 +48,43 @@ function AuthPage() {
     e.preventDefault();
     setErro(null);
     setInfo(null);
-    if (!email.trim() || senha.length < 8) {
-      setErro("Informe o e-mail e uma senha com pelo menos 8 caracteres.");
+    const emailLimpo = normalizarEmail(email);
+    if (!emailLimpo) {
+      setErro("Informe o e-mail.");
+      return;
+    }
+    if (!emailValido(emailLimpo)) {
+      setErro("E-mail inválido. Confira se está escrito certo, sem acentos ou espaços (ex.: nome@proz.com.br).");
+      return;
+    }
+    if (senha.length < 8) {
+      setErro("Senha fraca. Use pelo menos 8 caracteres.");
       return;
     }
     setEnviando(true);
     try {
       if (modo === "criar" && podeCriar) {
         const { data, error } = await supabase.auth.signUp({
-          email: email.trim(),
+          email: emailLimpo,
           password: senha,
           options: { emailRedirectTo: `${window.location.origin}/admin` },
         });
         if (error) throw error;
+        // E-mail já existente volta sem erro, mas sem identidades.
+        if (data.user && data.user.identities?.length === 0) {
+          setErro(mensagemErroAuth({ code: "user_already_exists" }));
+          return;
+        }
         if (data.session) navigate({ to: "/admin" });
-        else setInfo("Conta criada! Confirme pelo link que enviamos ao seu e-mail e depois entre aqui.");
+        else setInfo(`Conta criada! Enviamos um link de confirmação para ${emailLimpo}. Confirme pelo link (olhe também o spam) e depois entre aqui.`);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: senha });
+        const { error } = await supabase.auth.signInWithPassword({ email: emailLimpo, password: senha });
         if (error) throw error;
         navigate({ to: "/admin" });
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "";
-      setErro(
-        /invalid login/i.test(msg)
-          ? "E-mail ou senha incorretos."
-          : /not confirmed/i.test(msg)
-            ? "Confirme seu e-mail pelo link enviado antes de entrar."
-            : "Não foi possível continuar agora. Tente de novo.",
-      );
+      console.error("Falha no acesso admin:", err);
+      setErro(mensagemErroAuth(err as ErroAuth));
     } finally {
       setEnviando(false);
     }
