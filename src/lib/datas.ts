@@ -13,7 +13,8 @@ export function formatarHorario(h: string): string {
 
 export function diaDaSemana(iso: string): string {
   const [a, m, d] = iso.slice(0, 10).split("-").map(Number);
-  return DIAS[new Date(Date.UTC(a, m - 1, d)).getUTCDay()];
+  const dt = new Date(Date.UTC(a ?? 1970, (m ?? 1) - 1, d ?? 1));
+  return DIAS[dt.getUTCDay()] ?? "";
 }
 
 /** "25/11/2026" -> "2026-11-25" ou null se inválida. */
