@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { diaDaSemana, formatarData, formatarHorario } from "@/lib/datas";
 import { ULTIMAS_VAGAS, type AulaDisponivel, type ResumoAula } from "./tipos";
 
-export function StepHeading({ eyebrow, title, hint }: { eyebrow: string; title: string; hint?: string }) {
+export function StepHeading({ eyebrow, title, hint }: { eyebrow: string; title: string; hint?: string | undefined }) {
   return (
     <div className="mb-6">
       <p className="eyebrow">{eyebrow}</p>
@@ -21,9 +21,9 @@ export function OptionButton({
   icon,
 }: {
   label: string;
-  detail?: string;
+  detail?: string | undefined;
   onClick: () => void;
-  icon?: ReactNode;
+  icon?: ReactNode | undefined;
 }) {
   return (
     <button

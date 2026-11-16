@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
  * Espaço reservado para o logo oficial da Proz (versão branca sobre o gradiente).
  * Substituir pelo arquivo enviado pela marca mantendo largura mínima de 80px.
  */
-export function Logo({ className }: { className?: string }) {
+export function Logo({ className }: { className?: string | undefined }) {
   return (
     <span
       className={cn(
