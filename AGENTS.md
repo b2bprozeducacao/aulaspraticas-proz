@@ -31,6 +31,6 @@ use the editor.
 
 ## Project rules
 - Seat confirmation runs only through the `confirmar_inscricao` database function (row lock + all checks in one transaction); never insert into `inscricoes` from app code, so the server stays the single source of truth for seat limits.
-- Students read classes only via `listar_aulas_disponiveis()`; `inscricoes` has no anon access and is readable only by admins through RLS (`has_role`), so personal data is never public.
+- Students read classes only via `listar_aulas_disponiveis()`; `aulas` and `inscricoes` have no anon access and are readable only by admins through RLS (`has_role`), so personal data is never public.
 - Admin role is stored in `user_roles`; the first account ever created becomes admin via a trigger on `auth.users`, so no hardcoded credentials are needed.
 - Pure rules (validation, CSV export, spreadsheet import parsing) live in `src/lib/` with tests in `src/lib/regras.test.ts`.
