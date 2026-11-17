@@ -111,6 +111,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_editar_aula: {
+        Args: {
+          p_curso: string
+          p_data: string
+          p_horario: string
+          p_id: string
+          p_professor: string
+          p_tema_da_aula: string
+          p_unidade: string
+          p_vagas_totais: number
+        }
+        Returns: Json
+      }
+      admin_excluir_aula: {
+        Args: { p_id: string; p_inscritos_confirmados: number }
+        Returns: Json
+      }
       admin_listar_aulas: {
         Args: never
         Returns: {

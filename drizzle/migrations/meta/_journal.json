@@ -22,6 +22,13 @@
       "when": 1794837071135,
       "tag": "0002_restringir_leitura_aulas",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794938320665,
+      "tag": "0003_editar_excluir_aula_e_msg_email_duplicado",
+      "breakpoints": true
     }
   ]
 }
