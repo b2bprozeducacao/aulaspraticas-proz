@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { AlertCircle, ArrowLeft, Building2, GraduationCap, Loader2, PartyPopper, RefreshCw } from "lucide-react";
+import { AlertCircle, ArrowLeft, Building2, GraduationCap, Loader2, PartyPopper, RefreshCw, Lock } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -166,7 +166,16 @@ function Inscricao() {
     <div className="flex min-h-screen flex-col bg-gradient-page">
       <header className="bg-gradient-brand">
         <div className="mx-auto max-w-3xl px-5 pb-8 pt-5">
-          <Logo />
+          <div className="flex items-center justify-between gap-4">
+            <Logo />
+            <Link
+              to="/admin"
+              className="inline-flex items-center gap-1.5 rounded-full border border-on-brand/40 px-3 py-1.5 text-sm font-medium text-on-brand transition-colors hover:bg-on-brand/10"
+            >
+              <Lock className="size-4" aria-hidden />
+              Área admin
+            </Link>
+          </div>
           {etapa < 6 && (
             <div className="mt-8">
               <p className="eyebrow-on-brand">Aulas práticas</p>
