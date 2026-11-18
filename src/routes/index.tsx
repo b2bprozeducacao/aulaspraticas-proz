@@ -67,7 +67,7 @@ function Inscricao() {
   const [aceite, setAceite] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
-  const [erroConfirmacao, setErroConfirmacao] = useState<{ mensagem: string; aulaExistente?: ResumoAula | undefined } | null>(null);
+  const [erroConfirmacao, setErroConfirmacao] = useState<{ mensagem: string } | null>(null);
   const [confirmada, setConfirmada] = useState<{ aula: ResumoAula; nome: string; email: string } | null>(null);
 
   const cursos = useMemo(() => contar(aulas ?? [], (a) => a.curso), [aulas]);
@@ -142,7 +142,7 @@ function Inscricao() {
         irPara(4);
         return;
       }
-      setErroConfirmacao({ mensagem: r.mensagem, aulaExistente: r.aula_existente });
+      setErroConfirmacao({ mensagem: r.mensagem });
     } catch {
       setErroConfirmacao({ mensagem: "Não conseguimos confirmar agora. Verifique sua conexão e tente de novo." });
     } finally {
@@ -356,14 +356,6 @@ function Inscricao() {
                 <Alerta>
                   <div>
                     <p className="font-bold">{erroConfirmacao.mensagem}</p>
-                    {erroConfirmacao.aulaExistente && (
-                      <p className="mt-1">
-                        Sua inscrição atual: <strong>{erroConfirmacao.aulaExistente.tema_da_aula}</strong> —{" "}
-                        {erroConfirmacao.aulaExistente.curso}, {erroConfirmacao.aulaExistente.unidade},{" "}
-                        {erroConfirmacao.aulaExistente.data} às {erroConfirmacao.aulaExistente.horario} com{" "}
-                        {erroConfirmacao.aulaExistente.professor}.
-                      </p>
-                    )}
                   </div>
                 </Alerta>
               )}

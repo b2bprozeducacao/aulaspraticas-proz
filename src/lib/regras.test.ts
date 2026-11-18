@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { emailValido, nomeCompletoValido, normalizarEmail } from "./validacao";
-import { gerarCsv } from "./csv-export";
+import { gerarCsv, neutralizarFormula } from "./csv-export";
 import { validarLinhas } from "./importacao";
 import { parseDataBR } from "./datas";
 import { mensagemErroAuth } from "./erros-auth";
@@ -27,6 +27,20 @@ describe("exportação CSV", () => {
     expect(csv.charCodeAt(0)).toBe(0xfeff);
     expect(csv.split("\r\n")[0]).toBe("\uFEFFcurso;unidade;tema;data;horário;professor;nome;e-mail;data/hora da inscrição");
     expect(csv.split("\r\n")[1]).toBe("Enfermagem;Centro;Curativos;25/11/2026;10:00;Rita;Ana Silva;ana@x.com;13/11/2026 17:00");
+  });
+});
+
+describe("proteção contra fórmulas no CSV", () => {
+  it("prefixa com apóstrofo células que começam com =, +, - ou @", () => {
+    expect(neutralizarFormula("=HYPERLINK(1)")).toBe("'=HYPERLINK(1)");
+    expect(neutralizarFormula("+55")).toBe("'+55");
+    expect(neutralizarFormula("-2")).toBe("'-2");
+    expect(neutralizarFormula("@soma")).toBe("'@soma");
+    expect(neutralizarFormula("Ana Silva")).toBe("Ana Silva");
+  });
+  it("aplica a proteção dentro do arquivo gerado", () => {
+    const csv = gerarCsv([["=cmd", "B", "C", "D", "E", "F", "G", "H", "I"]]);
+    expect(csv.split("\r\n")[1]).toBe("'=cmd;B;C;D;E;F;G;H;I");
   });
 });
 

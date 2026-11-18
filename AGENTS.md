@@ -34,3 +34,4 @@ use the editor.
 - Students read classes only via `listar_aulas_disponiveis()`; `aulas` and `inscricoes` have no anon access and are readable only by admins through RLS (`has_role`), so personal data is never public.
 - Admin role is stored in `user_roles`; the first account ever created becomes admin via a trigger on `auth.users`, so no hardcoded credentials are needed.
 - Pure rules (validation, CSV export, spreadsheet import parsing) live in `src/lib/` with tests in `src/lib/regras.test.ts`.
+- Admins edit/delete classes only via `admin_editar_aula` / `admin_excluir_aula`; delete requires the caller to pass the current confirmed-enrollment count, so enrollments are never removed without the admin seeing how many.

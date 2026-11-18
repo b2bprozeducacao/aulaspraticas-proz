@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { CalendarDays, Clock, Download, Loader2, LogOut, MapPin, Upload, UserRound, Users } from "lucide-react";
+import { CalendarDays, Clock, Download, Loader2, LogOut, MapPin, Pencil, Trash2, Upload, UserRound, Users } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/proz/Logo";
 import { ImportarAulas } from "@/components/admin/ImportarAulas";
 import { InscritosDialog } from "@/components/admin/InscritosDialog";
+import { EditarAulaDialog, ExcluirAulaDialog } from "@/components/admin/GerenciarAula";
 import { aulasAdminQuery, buscarInscricoesConfirmadas, paraLinhaExport, type AulaAdmin } from "@/components/admin/dados";
 import { baixarCsv, gerarCsv } from "@/lib/csv-export";
 import { formatarData, formatarHorario } from "@/lib/datas";
@@ -120,6 +121,8 @@ function ListaAulas() {
   const [professor, setProfessor] = useState(TODOS);
   const [data, setData] = useState("");
   const [aberta, setAberta] = useState<AulaAdmin | null>(null);
+  const [editando, setEditando] = useState<AulaAdmin | null>(null);
+  const [excluindo, setExcluindo] = useState<AulaAdmin | null>(null);
   const [exportando, setExportando] = useState(false);
 
   const lista = aulas ?? [];
@@ -223,12 +226,14 @@ function ListaAulas() {
       ) : (
         <ul className="grid gap-3 md:grid-cols-2">
           {filtradas.map((a) => (
-            <CardAula key={a.id} aula={a} onVer={() => setAberta(a)} />
+            <CardAula key={a.id} aula={a} onVer={() => setAberta(a)} onEditar={() => setEditando(a)} onExcluir={() => setExcluindo(a)} />
           ))}
         </ul>
       )}
 
       <InscritosDialog aula={abertaAtual} onClose={() => setAberta(null)} />
+      <EditarAulaDialog aula={editando} onClose={() => setEditando(null)} />
+      <ExcluirAulaDialog aula={excluindo} onClose={() => setExcluindo(null)} />
     </div>
   );
 }
@@ -266,7 +271,7 @@ function Filtro({
   );
 }
 
-function CardAula({ aula, onVer }: { aula: AulaAdmin; onVer: () => void }) {
+function CardAula({ aula, onVer, onEditar, onExcluir }: { aula: AulaAdmin; onVer: () => void; onEditar: () => void; onExcluir: () => void }) {
   const pct = aula.vagas_totais > 0 ? Math.min(100, Math.round((aula.vagas_preenchidas / aula.vagas_totais) * 100)) : 100;
   const passada = new Date(`${aula.data}T${formatarHorario(aula.horario)}:00-03:00`) <= new Date();
   return (
@@ -306,9 +311,17 @@ function CardAula({ aula, onVer }: { aula: AulaAdmin; onVer: () => void }) {
           <div className="h-full rounded-full bg-gradient-brand transition-all" style={{ width: `${pct}%` }} />
         </div>
       </div>
-      <Button variant="soft" size="sm" className="self-start" onClick={onVer}>
-        <Users aria-hidden /> Ver inscritos
-      </Button>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="soft" size="sm" onClick={onVer}>
+          <Users aria-hidden /> Ver inscritos
+        </Button>
+        <Button variant="outline" size="sm" onClick={onEditar}>
+          <Pencil aria-hidden /> Editar
+        </Button>
+        <Button variant="outline" size="sm" onClick={onExcluir} className="text-destructive">
+          <Trash2 aria-hidden /> Excluir
+        </Button>
+      </div>
     </li>
   );
 }

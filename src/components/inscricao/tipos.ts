@@ -25,7 +25,6 @@ export type RespostaConfirmacao =
       ok: false;
       codigo: "nome_invalido" | "email_invalido" | "aula_indisponivel" | "email_ja_inscrito" | "esgotada";
       mensagem: string;
-      aula_existente?: ResumoAula | undefined;
     };
 
 export const ULTIMAS_VAGAS = 3;

@@ -12,8 +12,13 @@ export const COLUNAS_EXPORT = [
 
 export type LinhaExport = [string, string, string, string, string, string, string, string, string];
 
+/** Impede que o Excel interprete a célula como fórmula (injeção de CSV). */
+export function neutralizarFormula(valor: string): string {
+  return /^[=+\-@]/.test(valor) ? `'${valor}` : valor;
+}
+
 function celula(valor: string): string {
-  const v = String(valor ?? "");
+  const v = neutralizarFormula(String(valor ?? ""));
   return /[";\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
 }
 
