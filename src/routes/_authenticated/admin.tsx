@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/proz/Logo";
+import { BuscaAlunos } from "@/components/admin/BuscaAlunos";
 import { ImportarAulas } from "@/components/admin/ImportarAulas";
 import { InscritosDialog } from "@/components/admin/InscritosDialog";
 import { EditarAulaDialog, ExcluirAulaDialog } from "@/components/admin/GerenciarAula";
@@ -182,6 +183,7 @@ function ListaAulas() {
 
   return (
     <div className="grid gap-5">
+      <BuscaAlunos />
       <div className="grid gap-4 rounded-2xl border border-border bg-card p-4 shadow-card sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
         <Filtro id="f-curso" label="Curso" valor={curso} onChange={setCurso} opcoes={opcoes(lista, "curso")} />
         <Filtro id="f-unidade" label="Unidade" valor={unidade} onChange={setUnidade} opcoes={opcoes(lista, "unidade")} />

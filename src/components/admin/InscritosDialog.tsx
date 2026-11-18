@@ -1,28 +1,16 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, Loader2, UserX } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRightLeft, Download, Eye, Loader2, UserPlus, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { baixarCsv, gerarCsv } from "@/lib/csv-export";
 import { formatarData, formatarDataHora, formatarHorario } from "@/lib/datas";
 import { buscarInscricoesConfirmadas, paraLinhaExport, slug, type AulaAdmin, type InscricaoAdmin } from "./dados";
+import { AdicionarAlunoDialog, useGestaoAluno, type AlunoAlvo } from "./GestaoAluno";
 
 export function InscritosDialog({ aula, onClose }: { aula: AulaAdmin | null; onClose: () => void }) {
-  const queryClient = useQueryClient();
-  const [cancelar, setCancelar] = useState<InscricaoAdmin | null>(null);
-  const [cancelando, setCancelando] = useState(false);
+  const gestao = useGestaoAluno();
+  const [adicionar, setAdicionar] = useState(false);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin", "inscritos", aula?.id],
@@ -30,18 +18,14 @@ export function InscritosDialog({ aula, onClose }: { aula: AulaAdmin | null; onC
     enabled: !!aula,
   });
 
-  async function confirmarCancelamento() {
-    if (!cancelar) return;
-    setCancelando(true);
-    const { error } = await supabase.from("inscricoes").update({ status: "cancelada" }).eq("id", cancelar.id);
-    setCancelando(false);
-    if (error) {
-      toast.error("Não foi possível cancelar. Tente de novo.");
-      return;
-    }
-    toast.success(`Inscrição de ${cancelar.nome} cancelada. A vaga foi liberada.`);
-    setCancelar(null);
-    queryClient.invalidateQueries({ queryKey: ["admin"] });
+  function alvo(i: InscricaoAdmin): AlunoAlvo {
+    return {
+      inscricao_id: i.id,
+      nome: i.nome,
+      email: i.email,
+      data_hora_inscricao: i.data_hora_inscricao,
+      aula: { id: aula!.id, curso: aula!.curso, unidade: aula!.unidade, tema_da_aula: aula!.tema_da_aula, data: aula!.data, horario: aula!.horario, professor: aula!.professor },
+    };
   }
 
   function exportar() {
@@ -72,9 +56,14 @@ export function InscritosDialog({ aula, onClose }: { aula: AulaAdmin | null; onC
                   <strong className="text-foreground">{aula.vagas_preenchidas}</strong> de {aula.vagas_totais} vagas
                   preenchidas
                 </p>
-                <Button variant="soft" size="sm" onClick={exportar} disabled={!data?.length}>
-                  <Download aria-hidden /> Exportar CSV
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" onClick={() => setAdicionar(true)} disabled={aula.vagas_restantes === 0}>
+                    <UserPlus aria-hidden /> Adicionar aluno
+                  </Button>
+                  <Button variant="soft" size="sm" onClick={exportar} disabled={!data?.length}>
+                    <Download aria-hidden /> Exportar CSV
+                  </Button>
+                </div>
               </div>
 
               {isLoading ? (
@@ -99,9 +88,17 @@ export function InscritosDialog({ aula, onClose }: { aula: AulaAdmin | null; onC
                         <p className="break-all text-sm text-muted-foreground">{i.email}</p>
                         <p className="text-xs text-muted-foreground">Inscrito em {formatarDataHora(i.data_hora_inscricao)}</p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={() => setCancelar(i)}>
-                        <UserX aria-hidden /> Cancelar
-                      </Button>
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" size="sm" onClick={() => gestao.abrirDetalhes(alvo(i))}>
+                          <Eye aria-hidden /> Detalhes
+                        </Button>
+                        <Button variant="soft" size="sm" onClick={() => gestao.abrirTroca(alvo(i))}>
+                          <ArrowRightLeft aria-hidden /> Trocar aula
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-destructive" onClick={() => gestao.abrirCancelamento(alvo(i))}>
+                          <UserX aria-hidden /> Cancelar
+                        </Button>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -111,30 +108,8 @@ export function InscritosDialog({ aula, onClose }: { aula: AulaAdmin | null; onC
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!cancelar} onOpenChange={(o) => !o && setCancelar(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Cancelar inscrição?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {cancelar?.nome} ({cancelar?.email}) perde a vaga, que fica livre para outra pessoa. O e-mail poderá se
-              inscrever de novo.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={cancelando}>Voltar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                confirmarCancelamento();
-              }}
-              disabled={cancelando}
-            >
-              {cancelando && <Loader2 className="animate-spin" aria-hidden />}
-              Cancelar inscrição
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {gestao.janelas}
+      <AdicionarAlunoDialog aula={adicionar ? aula : null} onClose={() => setAdicionar(false)} />
     </>
   );
 }

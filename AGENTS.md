@@ -35,3 +35,4 @@ use the editor.
 - Admin role is stored in `user_roles`; the first account ever created becomes admin via a trigger on `auth.users`, so no hardcoded credentials are needed.
 - Pure rules (validation, CSV export, spreadsheet import parsing) live in `src/lib/` with tests in `src/lib/regras.test.ts`.
 - Admins edit/delete classes only via `admin_editar_aula` / `admin_excluir_aula`; delete requires the caller to pass the current confirmed-enrollment count, so enrollments are never removed without the admin seeing how many.
+- Enrollment changes from the admin UI (switch, cancel, manual add) go only through admin-checked DB functions that also write `historico_admin`; `authenticated` has no INSERT/UPDATE/DELETE on `inscricoes`, so every admin action is audited.

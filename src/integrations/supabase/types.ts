@@ -53,6 +53,54 @@ export type Database = {
         }
         Relationships: []
       }
+      historico_admin: {
+        Row: {
+          acao: string
+          admin_email: string | null
+          admin_id: string | null
+          aluno_email: string
+          aluno_nome: string
+          aula_antiga: string | null
+          aula_antiga_id: string | null
+          aula_nova: string | null
+          aula_nova_id: string | null
+          created_at: string
+          id: string
+          inscricao_id: string
+          motivo: string | null
+        }
+        Insert: {
+          acao: string
+          admin_email?: string | null
+          admin_id?: string | null
+          aluno_email: string
+          aluno_nome: string
+          aula_antiga?: string | null
+          aula_antiga_id?: string | null
+          aula_nova?: string | null
+          aula_nova_id?: string | null
+          created_at?: string
+          id?: string
+          inscricao_id: string
+          motivo?: string | null
+        }
+        Update: {
+          acao?: string
+          admin_email?: string | null
+          admin_id?: string | null
+          aluno_email?: string
+          aluno_nome?: string
+          aula_antiga?: string | null
+          aula_antiga_id?: string | null
+          aula_nova?: string | null
+          aula_nova_id?: string | null
+          created_at?: string
+          id?: string
+          inscricao_id?: string
+          motivo?: string | null
+        }
+        Relationships: []
+      }
       inscricoes: {
         Row: {
           aula_id: string
@@ -111,6 +159,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_buscar_inscricoes: {
+        Args: { p_termo: string }
+        Returns: {
+          aula_id: string
+          curso: string
+          data: string
+          data_hora_inscricao: string
+          email: string
+          horario: string
+          inscricao_id: string
+          nome: string
+          professor: string
+          tema_da_aula: string
+          unidade: string
+        }[]
+      }
+      admin_cancelar_inscricao: {
+        Args: { p_inscricao_id: string; p_motivo?: string }
+        Returns: Json
+      }
       admin_editar_aula: {
         Args: {
           p_curso: string
@@ -126,6 +194,39 @@ export type Database = {
       }
       admin_excluir_aula: {
         Args: { p_id: string; p_inscritos_confirmados: number }
+        Returns: Json
+      }
+      admin_historico_inscricao: {
+        Args: { p_inscricao_id: string }
+        Returns: {
+          acao: string
+          admin_email: string | null
+          admin_id: string | null
+          aluno_email: string
+          aluno_nome: string
+          aula_antiga: string | null
+          aula_antiga_id: string | null
+          aula_nova: string | null
+          aula_nova_id: string | null
+          created_at: string
+          id: string
+          inscricao_id: string
+          motivo: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "historico_admin"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_inscrever_aluno: {
+        Args: {
+          p_aula_id: string
+          p_email: string
+          p_motivo?: string
+          p_nome: string
+        }
         Returns: Json
       }
       admin_listar_aulas: {
@@ -157,6 +258,8 @@ export type Database = {
         }
         Returns: Json
       }
+      descrever_aula: { Args: { p_id: string }; Returns: string }
+      email_admin_atual: { Args: never; Returns: string }
       existe_admin: { Args: never; Returns: boolean }
       has_role: {
         Args: {
@@ -178,6 +281,14 @@ export type Database = {
           vagas_restantes: number
           vagas_totais: number
         }[]
+      }
+      trocar_aula_inscricao: {
+        Args: {
+          p_inscricao_id: string
+          p_motivo?: string
+          p_nova_aula_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {
