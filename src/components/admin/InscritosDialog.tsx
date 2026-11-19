@@ -57,7 +57,7 @@ export function InscritosDialog({ aula, onClose }: { aula: AulaAdmin | null; onC
                   preenchidas
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" onClick={() => setAdicionar(true)} disabled={aula.vagas_restantes === 0}>
+                  <Button size="sm" onClick={() => setAdicionar(true)} disabled={aula.vagas_restantes === 0 || new Date(`${aula.data}T${formatarHorario(aula.horario)}:00-03:00`) <= new Date()}>
                     <UserPlus aria-hidden /> Adicionar aluno
                   </Button>
                   <Button variant="soft" size="sm" onClick={exportar} disabled={!data?.length}>

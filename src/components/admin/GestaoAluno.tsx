@@ -245,7 +245,7 @@ export function AdicionarAlunoDialog({ aula, onClose }: { aula: AulaResumo | nul
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [motivo, setMotivo] = useState("");
-  const [erros, setErros] = useState<{ nome?: string; email?: string; geral?: string }>({});
+  const [erros, setErros] = useState<{ nome?: string | undefined; email?: string | undefined; geral?: string | undefined }>({});
   const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
